@@ -3,27 +3,20 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Chú Bò Vượt Ngục - Pixel Art Edition</title>
+    <title>Chú Bò Vượt Ngục - HD Pixel Edition</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
             background-color: #051e11;
             color: #fff;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
             min-height: 100vh;
         }
         #info { font-size: 20px; font-weight: bold; color: #fef08a; margin-bottom: 12px; }
         #game-board {
-            position: relative;
-            width: 360px;
-            height: 550px;
-            border: 4px solid #22c55e;
-            border-radius: 12px;
-            overflow: hidden;
+            position: relative; width: 360px; height: 550px;
+            border: 4px solid #22c55e; border-radius: 12px; overflow: hidden;
             box-shadow: 0 10px 30px rgba(0,0,0,0.8);
         }
         canvas { 
@@ -57,7 +50,7 @@
 
         <div id="start-screen" class="msg-box">
             <h1>BÒ VƯỢT NGỤC 🐮💥</h1>
-            <p>Dùng <b>Phím Mũi Tên Trái / Phải</b> hoặc <b>Chạm Màn Hình</b> để né chướng ngại vật!</p>
+            <p>Dùng <b>Phím Trái / Phải</b> hoặc <b>Chạm Màn Hình</b> để né chướng ngại vật!</p>
             <button onclick="startGame()">BẮT ĐẦU CHẠY</button>
         </div>
 
@@ -78,37 +71,15 @@
         const startScreen = document.getElementById('start-screen');
         const overScreen = document.getElementById('over-screen');
 
-        // --- KHỞI TẠO VẼ HÌNH PIXEL BẰNG CODE (FALLBACK CHUẨN ĐẸP) ---
-        function createPixelCanvas(drawFunc, w, h) {
-            const c = document.createElement('canvas');
-            c.width = w; c.height = h;
-            const cx = c.getContext('2d');
-            cx.imageSmoothingEnabled = false;
-            drawFunc(cx, w, h);
-            return c;
-        }
+        // --- TẢI HÌNH ẢNH THẬT ---
+        const imgCow = new Image();
+        imgCow.src = 'watermarked_img_9337427793953355696.png'; // Bò Pixel[cite: 1]
 
-        // Vẽ con bò Pixel
-        const imgCow = createPixelCanvas((c) => {
-            c.fillStyle = '#ffffff'; c.fillRect(8, 10, 32, 28);
-            c.fillStyle = '#1e293b'; c.fillRect(12, 14, 10, 10); c.fillRect(26, 24, 12, 8);
-            c.fillStyle = '#f43f5e'; c.fillRect(18, 32, 12, 6);
-            c.fillStyle = '#334155'; c.fillRect(6, 6, 6, 6); c.fillRect(36, 6, 6, 6);
-        }, 48, 48);
+        const imgFarmer = new Image();
+        imgFarmer.src = 'watermarked_img_1535765349547511823.png'; // Nông dân Pixel[cite: 2]
 
-        // Vẽ bác nông dân Pixel
-        const imgFarmer = createPixelCanvas((c) => {
-            c.fillStyle = '#eab308'; c.fillRect(10, 4, 28, 8); // Mũ rơm
-            c.fillStyle = '#fca5a5'; c.fillRect(14, 12, 20, 12); // Mặt
-            c.fillStyle = '#2563eb'; c.fillRect(12, 24, 24, 18); // Áo
-        }, 48, 48);
-
-        // Vẽ thùng gỗ Pixel
-        const imgObstacle = createPixelCanvas((c) => {
-            c.fillStyle = '#854d0e'; c.fillRect(6, 6, 36, 36);
-            c.fillStyle = '#a16207'; c.fillRect(10, 10, 28, 28);
-            c.fillStyle = '#713f12'; c.fillRect(6, 22, 36, 4);
-        }, 48, 48);
+        const imgObstacle = new Image();
+        imgObstacle.src = 'watermarked_img_8953806816663576093.png'; // Thùng gỗ / rơm Pixel[cite: 3]
 
         // --- NHẠC NỀN & ÂM THANH 8-BIT ---
         let audioCtx = null;
@@ -147,13 +118,13 @@
         const lanes = [60, 180, 300];
         let currentLane = 1;
 
-        const cow = { x: lanes[1], y: 420, targetX: lanes[1], w: 48, h: 48 };
-        const farmer = { x: lanes[1], y: 490, w: 44, h: 44 };
+        const cow = { x: lanes[1], y: 400, targetX: lanes[1], w: 60, h: 60 };
+        const farmer = { x: lanes[1], y: 480, w: 55, h: 55 };
         let obstacles = [];
 
         function createObstacle() {
             const laneIdx = Math.floor(Math.random() * 3);
-            obstacles.push({ x: lanes[laneIdx], y: -50, w: 44, h: 44 });
+            obstacles.push({ x: lanes[laneIdx], y: -60, w: 50, h: 50 });
         }
 
         function moveLeft() {
@@ -204,11 +175,11 @@
                 let obs = obstacles[i];
                 obs.y += speed;
 
-                if (Math.abs(cow.x - obs.x) < 32 && Math.abs(cow.y - obs.y) < 28) {
+                if (Math.abs(cow.x - obs.x) < 35 && Math.abs(cow.y - obs.y) < 35) {
                     gameOver();
                 }
 
-                if (obs.y > canvas.height + 50) {
+                if (obs.y > canvas.height + 60) {
                     obstacles.splice(i, 1);
                     score += 10;
                     scoreEl.innerText = score;
@@ -218,7 +189,7 @@
         }
 
         function draw() {
-            // Nền cỏ
+            // Nền cỏ xanh
             ctx.fillStyle = '#15803d';
             ctx.fillRect(0, 0, canvas.width, canvas.height);
 
@@ -233,14 +204,21 @@
             ctx.stroke();
 
             // Vẽ Nông Dân
-            ctx.drawImage(imgFarmer, farmer.x - farmer.w/2, farmer.y - farmer.h/2, farmer.w, farmer.h);
+            if (imgFarmer.complete) {
+                ctx.drawImage(imgFarmer, farmer.x - farmer.w/2, farmer.y - farmer.h/2, farmer.w, farmer.h);
+            }
 
-            // Vẽ Bò
-            ctx.drawImage(imgCow, cow.x - cow.w/2, cow.y - cow.h/2, cow.w, cow.h);
+            // Vẽ Bò (Cắt khung hình đầu tiên của sprite sheet bò)
+            if (imgCow.complete) {
+                // Lấy 1 khung hình bò xịn
+                ctx.drawImage(imgCow, 0, 0, imgCow.width/3, imgCow.height/4, cow.x - cow.w/2, cow.y - cow.h/2, cow.w, cow.h);
+            }
 
-            // Vẽ Chướng Ngại Vật
+            // Vẽ Chướng Ngại Vật (Cắt hình thùng gỗ)
             for (let obs of obstacles) {
-                ctx.drawImage(imgObstacle, obs.x - obs.w/2, obs.y - obs.h/2, obs.w, obs.h);
+                if (imgObstacle.complete) {
+                    ctx.drawImage(imgObstacle, 0, 0, imgObstacle.width/2, imgObstacle.height/2, obs.x - obs.w/2, obs.y - obs.h/2, obs.w, obs.h);
+                }
             }
         }
 
