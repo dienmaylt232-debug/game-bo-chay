@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Chú Bò Vượt Ngục - Pixel Edition</title>
+    <title>Chú Bò Vượt Ngục - Full 3D Edition</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
@@ -44,7 +44,7 @@
 <body>
 
     <!-- ========================================== -->
-    <!-- THAY TÊN FILE NHẠC CỦA BẠN VÀO DÒNG DƯỚI: -->
+    <!-- THAY TÊN FILE NHẠC CỦA BẠN VÀO ĐÂY (VD: jack.mp3) -->
     <!-- ========================================== -->
     <audio id="bgMusic" loop>
         <source src="TEN_FILE_NHAC_CUA_BAN.mp3" type="audio/mpeg">
@@ -79,21 +79,21 @@
         const overScreen = document.getElementById('over-screen');
         const bgMusic = document.getElementById('bgMusic');
 
-        // --- TẢI HÌNH ẢNH PIXEL ---
+        // --- TẢI HÌNH ẢNH CHÚ BÒ VÀ NÔNG DÂN ---
         let cowLoaded = false;
         const imgCow = new Image();
         imgCow.onload = () => { cowLoaded = true; };
-        imgCow.src = 'watermarked_img_9337427793953355696.png'; //
+        imgCow.src = 'cow.jpg'; // File ảnh chú bò 3D của bạn
 
         let farmerLoaded = false;
         const imgFarmer = new Image();
         imgFarmer.onload = () => { farmerLoaded = true; };
-        imgFarmer.src = 'watermarked_img_1535765349547511823.png'; //
+        imgFarmer.src = 'farmer.png'; // File ảnh chú nông dân của bạn
 
         let obstacleLoaded = false;
         const imgObstacle = new Image();
         imgObstacle.onload = () => { obstacleLoaded = true; };
-        imgObstacle.src = 'watermarked_img_8953806816663576093.png'; //
+        imgObstacle.src = 'watermarked_img_8953806816663576093.png';
 
         // --- GAME LOGIC ---
         let isPlaying = false;
@@ -103,8 +103,8 @@
         const lanes = [60, 180, 300];
         let currentLane = 1;
 
-        const cow = { x: lanes[1], y: 400, targetX: lanes[1], w: 60, h: 60 };
-        const farmer = { x: lanes[1], y: 480, w: 55, h: 55 };
+        const cow = { x: lanes[1], y: 400, targetX: lanes[1], w: 65, h: 65 };
+        const farmer = { x: lanes[1], y: 480, w: 60, h: 60 };
         let obstacles = [];
 
         function createObstacle() {
@@ -143,9 +143,9 @@
             isPlaying = true;
             startScreen.classList.add('hidden');
             
-            // Phát nhạc
+            // Kích hoạt nhạc
             bgMusic.currentTime = 0;
-            bgMusic.play().catch(e => console.log("Trình duyệt chặn phát nhạc"));
+            bgMusic.play().catch(e => console.log("Trình duyệt chặn phát tự động"));
             
             loop();
         }
@@ -154,7 +154,7 @@
             if (!isPlaying) return;
 
             cow.x += (cow.targetX - cow.x) * 0.25;
-            farmer.x += (cow.x - farmer.x) * 0.08;
+            farmer.x += (cow.x - farmer.x) * 0.08; // Nông dân đuổi theo bò
 
             timer++;
             if (timer % 45 === 0) createObstacle();
@@ -191,7 +191,7 @@
             ctx.moveTo(240, 0); ctx.lineTo(240, canvas.height);
             ctx.stroke();
 
-            // Vẽ Bác Nông Dân
+            // Vẽ Chú Nông Dân Đuổi Theo
             if (farmerLoaded) {
                 ctx.drawImage(imgFarmer, farmer.x - farmer.w/2, farmer.y - farmer.h/2, farmer.w, farmer.h);
             } else {
@@ -199,19 +199,13 @@
                 ctx.fillRect(farmer.x - 20, farmer.y - 20, 40, 40);
             }
 
-            // Vẽ Chú Bò
+            // Vẽ Chú Bò 3D
             if (cowLoaded) {
-                ctx.drawImage(imgCow, 0, 0, imgCow.width/3, imgCow.height/4, cow.x - cow.w/2, cow.y - cow.h/2, cow.w, cow.h);
+                ctx.drawImage(imgCow, cow.x - cow.w/2, cow.y - cow.h/2, cow.w, cow.h);
             } else {
-                // Dự phòng hình chú bò màu trắng đốm đen
                 ctx.fillStyle = '#ffffff';
                 ctx.beginPath();
                 ctx.arc(cow.x, cow.y, 25, 0, Math.PI * 2);
-                ctx.fill();
-                ctx.fillStyle = '#000000';
-                ctx.beginPath();
-                ctx.arc(cow.x - 8, cow.y - 8, 8, 0, Math.PI * 2);
-                ctx.arc(cow.x + 10, cow.y + 5, 6, 0, Math.PI * 2);
                 ctx.fill();
             }
 
