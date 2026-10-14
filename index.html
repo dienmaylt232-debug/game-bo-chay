@@ -44,8 +44,7 @@
 <body>
 
     <!-- ========================================== -->
-    <!-- CHỖ NÀY ĐỂ CHÈN NHẠC CỦA BẠN: -->
-    <!-- Thay chữ TEN_FILE_NHAC_CUA_BAN.mp3 thành tên file của bạn -->
+    <!-- THAY TÊN FILE NHẠC CỦA BẠN VÀO DÒNG DƯỚI: -->
     <!-- ========================================== -->
     <audio id="bgMusic" loop>
         <source src="TEN_FILE_NHAC_CUA_BAN.mp3" type="audio/mpeg">
@@ -58,7 +57,7 @@
 
         <div id="start-screen" class="msg-box">
             <h1>BÒ VƯỢT NGỤC 🐮💥</h1>
-            <p>Dùng <b>Phím Mũi Tên Trái / Phải</b> (hoặc A/D) hoặc <b>Chạm Màn Hình</b> để né chướng ngại vật!</p>
+            <p>Dùng <b>Phím Trái / Phải</b> hoặc <b>Chạm Màn Hình</b> để né chướng ngại vật!</p>
             <button onclick="startGame()">BẮT ĐẦU CHẠY</button>
         </div>
 
@@ -81,13 +80,19 @@
         const bgMusic = document.getElementById('bgMusic');
 
         // --- TẢI HÌNH ẢNH PIXEL ---
+        let cowLoaded = false;
         const imgCow = new Image();
+        imgCow.onload = () => { cowLoaded = true; };
         imgCow.src = 'watermarked_img_9337427793953355696.png'; //
 
+        let farmerLoaded = false;
         const imgFarmer = new Image();
+        imgFarmer.onload = () => { farmerLoaded = true; };
         imgFarmer.src = 'watermarked_img_1535765349547511823.png'; //
 
+        let obstacleLoaded = false;
         const imgObstacle = new Image();
+        imgObstacle.onload = () => { obstacleLoaded = true; };
         imgObstacle.src = 'watermarked_img_8953806816663576093.png'; //
 
         // --- GAME LOGIC ---
@@ -138,9 +143,9 @@
             isPlaying = true;
             startScreen.classList.add('hidden');
             
-            // Phát nhạc của bạn khi bấm bắt đầu
+            // Phát nhạc
             bgMusic.currentTime = 0;
-            bgMusic.play().catch(e => console.log("Trình duyệt chặn phát nhạc tự động"));
+            bgMusic.play().catch(e => console.log("Trình duyệt chặn phát nhạc"));
             
             loop();
         }
@@ -172,11 +177,11 @@
         }
 
         function draw() {
-            // Nền cỏ xanh mướt
+            // Nền đường cỏ
             ctx.fillStyle = '#15803d';
             ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-            // Đường làn
+            // Vạch kẻ đường
             ctx.strokeStyle = '#4ade80';
             ctx.setLineDash([20, 20]);
             ctx.lineDashOffset = -timer * speed;
@@ -186,20 +191,37 @@
             ctx.moveTo(240, 0); ctx.lineTo(240, canvas.height);
             ctx.stroke();
 
-            // Vẽ Nông Dân
-            if (imgFarmer.complete) {
+            // Vẽ Bác Nông Dân
+            if (farmerLoaded) {
                 ctx.drawImage(imgFarmer, farmer.x - farmer.w/2, farmer.y - farmer.h/2, farmer.w, farmer.h);
+            } else {
+                ctx.fillStyle = '#f87171';
+                ctx.fillRect(farmer.x - 20, farmer.y - 20, 40, 40);
             }
 
-            // Vẽ Bò Pixel
-            if (imgCow.complete) {
+            // Vẽ Chú Bò
+            if (cowLoaded) {
                 ctx.drawImage(imgCow, 0, 0, imgCow.width/3, imgCow.height/4, cow.x - cow.w/2, cow.y - cow.h/2, cow.w, cow.h);
+            } else {
+                // Dự phòng hình chú bò màu trắng đốm đen
+                ctx.fillStyle = '#ffffff';
+                ctx.beginPath();
+                ctx.arc(cow.x, cow.y, 25, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.fillStyle = '#000000';
+                ctx.beginPath();
+                ctx.arc(cow.x - 8, cow.y - 8, 8, 0, Math.PI * 2);
+                ctx.arc(cow.x + 10, cow.y + 5, 6, 0, Math.PI * 2);
+                ctx.fill();
             }
 
             // Vẽ Chướng Ngại Vật
             for (let obs of obstacles) {
-                if (imgObstacle.complete) {
+                if (obstacleLoaded) {
                     ctx.drawImage(imgObstacle, 0, 0, imgObstacle.width/2, imgObstacle.height/2, obs.x - obs.w/2, obs.y - obs.h/2, obs.w, obs.h);
+                } else {
+                    ctx.fillStyle = '#eab308';
+                    ctx.fillRect(obs.x - 20, obs.y - 20, 40, 40);
                 }
             }
         }
@@ -211,7 +233,7 @@
         }
 
         function gameOver() {
-            bgMusic.pause(); // Dừng nhạc khi thua
+            bgMusic.pause();
             isPlaying = false;
             finalScoreEl.innerText = score;
             overScreen.classList.remove('hidden');
@@ -224,7 +246,6 @@
             scoreEl.innerText = '0';
             overScreen.classList.add('hidden');
             
-            // Phát lại nhạc từ đầu khi chơi lại
             bgMusic.currentTime = 0;
             bgMusic.play().catch(e => {});
             
