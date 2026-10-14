@@ -44,7 +44,7 @@
 <body>
 
     <!-- ========================================== -->
-    <!-- THAY TÊN FILE NHẠC CỦA BẠN VÀO ĐÂY (VD: jack.mp3) -->
+    <!-- CHÈN TÊN FILE NHẠC CỦA BẠN VÀO ĐÂY (VD: nhacjack.mp3) -->
     <!-- ========================================== -->
     <audio id="bgMusic" loop>
         <source src="TEN_FILE_NHAC_CUA_BAN.mp3" type="audio/mpeg">
@@ -83,12 +83,12 @@
         let cowLoaded = false;
         const imgCow = new Image();
         imgCow.onload = () => { cowLoaded = true; };
-        imgCow.src = 'cow.jpg'; // File ảnh chú bò 3D của bạn
+        imgCow.src = 'cow.jpg'; // Tên file ảnh chú bò trên GitHub
 
         let farmerLoaded = false;
         const imgFarmer = new Image();
         imgFarmer.onload = () => { farmerLoaded = true; };
-        imgFarmer.src = 'farmer.png'; // File ảnh chú nông dân của bạn
+        imgFarmer.src = 'farmer.png'; // Tên file ảnh nông dân trên GitHub
 
         let obstacleLoaded = false;
         const imgObstacle = new Image();
@@ -143,7 +143,7 @@
             isPlaying = true;
             startScreen.classList.add('hidden');
             
-            // Kích hoạt nhạc
+            // Phát nhạc
             bgMusic.currentTime = 0;
             bgMusic.play().catch(e => console.log("Trình duyệt chặn phát tự động"));
             
@@ -154,7 +154,7 @@
             if (!isPlaying) return;
 
             cow.x += (cow.targetX - cow.x) * 0.25;
-            farmer.x += (cow.x - farmer.x) * 0.08; // Nông dân đuổi theo bò
+            farmer.x += (cow.x - farmer.x) * 0.08; // Nông dân rượt theo bò
 
             timer++;
             if (timer % 45 === 0) createObstacle();
@@ -191,7 +191,7 @@
             ctx.moveTo(240, 0); ctx.lineTo(240, canvas.height);
             ctx.stroke();
 
-            // Vẽ Chú Nông Dân Đuổi Theo
+            // Vẽ Chú Nông Dân
             if (farmerLoaded) {
                 ctx.drawImage(imgFarmer, farmer.x - farmer.w/2, farmer.y - farmer.h/2, farmer.w, farmer.h);
             } else {
@@ -199,7 +199,7 @@
                 ctx.fillRect(farmer.x - 20, farmer.y - 20, 40, 40);
             }
 
-            // Vẽ Chú Bò 3D
+            // Vẽ Chú Bò
             if (cowLoaded) {
                 ctx.drawImage(imgCow, cow.x - cow.w/2, cow.y - cow.h/2, cow.w, cow.h);
             } else {
